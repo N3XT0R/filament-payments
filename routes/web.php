@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use TomatoPHP\FilamentPayments\Livewire\PaymentProcess;
 
 Route::domain(config('filament-tenancy.central_domain'))->middleware(['web'])->group(function () {
-    $route =  Route::name('payment.')->prefix('pay')->middleware(['auth:'.config('filament-payments.guard')]);
+    $route = Route::name('payment.')->prefix('pay')->middleware(['auth:'.config('filament-payments.guard')]);
     if(class_exists('\\TomatoPHP\FilamentSubscriptions\\Http\\Middleware\\VerifyBillableIsSubscribed'))
     {
         $route->withoutMiddleware([\TomatoPHP\FilamentSubscriptions\Http\Middleware\VerifyBillableIsSubscribed::class]);
