@@ -122,7 +122,9 @@ abstract class Driver
         ]);
 
         return response()->json([
-            'status' => 'success', 'message' => 'Payment created successfully', 'data' => [
+            'status' => 'success',
+            'message' => 'Payment created successfully',
+            'data' => [
                 'id' => $payment->trx,
                 'url' => route('payment.index', $payment->trx),
             ]
