@@ -13,7 +13,10 @@ use TomatoPHP\FilamentPayments\Models\Payment;
 abstract class Driver
 {
     public static abstract function process(Payment $payment): false|string;
-    public static abstract function verify(Request $request): \Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector;
+
+    public static abstract function verify(Request $request
+    ): \Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector;
+
     public abstract function integration(): array;
 
     public static function cancel($trx)
@@ -118,10 +121,12 @@ abstract class Driver
             'billing_info' => $validated['billing_info'] ?? [],
         ]);
 
-        return response()->json(['status' => 'success', 'message' => 'Payment created successfully', 'data' => [
-            'id' => $payment->trx,
-            'url' => route('payment.index', $payment->trx),
-        ]], 201);
+        return response()->json([
+            'status' => 'success', 'message' => 'Payment created successfully', 'data' => [
+                'id' => $payment->trx,
+                'url' => route('payment.index', $payment->trx),
+            ]
+        ], 201);
     }
 
     public static function info(Request $request)
@@ -189,33 +194,37 @@ abstract class Driver
         ]);
     }
 
-    public static function paymentDataUpdate($payment, $isCancel = false)
+    public static function paymentDataUpdate(Payment $payment, bool $isCancel = false): void
     {
         if ($payment->status == 0) {
             $payment->status = 1;
-            $payment->save();
 
             if (!$isCancel) {
                 $modelClass = $payment->model_type;
                 $model = $modelClass::find($payment->model_id);
 
                 if ($model instanceof Team) {
-                    $user = Account::where('id', $payment->team->owner->id)->first();
-
-                    if (method_exists($user, 'depositFloat')) {
-                        $user->depositFloat($payment->final_amount);
-                    }
-                } else {
-                    if (method_exists($model, 'depositFloat')) {
-                        $model->depositFloat($payment->final_amount);
-                    }
+                    $model = Account::where('id', $payment->team->owner->id)->first();
                 }
-            }
 
-            if ($isCancel) {
+                /**
+                 * @notice
+                 * Should deposit amount NOT final_amount (!!!!), final amount contains the Payment Gateway Fee,
+                 * we do not want to deposit the fee to the user too.
+                 */
+                switch (true) {
+                    case method_exists($model, 'depositFloat'):
+                        $model->depositFloat($payment->amount, ['detail' => $payment->detail]);
+                        break;
+
+                    case method_exists($model, 'deposit'):
+                        $model->deposit($payment->amount, ['detail' => $payment->detail]);
+                        break;
+                }
+            } else {
                 $payment->status = 2;
-                $payment->save();
             }
+            $payment->save();
         }
     }
 }
