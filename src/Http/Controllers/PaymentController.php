@@ -117,10 +117,12 @@ class PaymentController extends Controller
             'billing_info' => $validated['billing_info'] ?? [],
         ]);
 
-        return response()->json(['status' => 'success', 'message' => 'Payment created successfully', 'data' => [
-            'id' => $payment->trx,
-            'url' => route('payment.index', $payment->trx),
-        ]], 201);
+        return response()->json([
+            'status' => 'success', 'message' => 'Payment created successfully', 'data' => [
+                'id' => $payment->trx,
+                'url' => route('payment.index', $payment->trx),
+            ]
+        ], 201);
     }
 
     public function info(Request $request)
@@ -190,22 +192,21 @@ class PaymentController extends Controller
 
     public function verify(Request $request, string $gateway)
     {
-
         $drivers = config('filament-payments.drivers');
         /**
          * @var Driver $gatewayClass
          */
         $gatewayClass = null;
-        foreach ($drivers as $driver){
-            if(str($driver)->contains($gateway)){
+        foreach ($drivers as $driver) {
+            if (str($driver)->contains($gateway)) {
                 $gatewayClass = app($driver);
                 break;
             }
         }
-        if(!$gatewayClass){
-            $gatewayClass = app(config('filament-payments.path') . "\\" . $gateway);
+        if (!$gatewayClass) {
+            $gatewayClass = config('filament-payments.path')."\\".$gateway;
         }
 
-        return $gatewayClass->verify($request);
+        return $gatewayClass::verify($request);
     }
 }
