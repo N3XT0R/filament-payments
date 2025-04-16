@@ -199,7 +199,7 @@ class PaymentController extends Controller
         $gatewayClass = null;
         foreach ($drivers as $driver) {
             if (str($driver)->contains($gateway)) {
-                $gatewayClass = app($driver);
+                $gatewayClass = $driver;
                 break;
             }
         }
