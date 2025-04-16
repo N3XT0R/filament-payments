@@ -123,5 +123,12 @@ return [
         'contact_us' => 'إذا واجهت أي مشاكل في عملية الدفع أو لم تستلم الخدمة المقدمة، اتصل بنا مباشرة',
         'signed_in_as' => 'مسجل الدخول كـ',
         'managing_billing_for' => 'إدارة الفواتير لـ',
+        //please translate it
+        'gateway_error' => 'Something is wrong try again later',
+        'gateway_updated' => [
+            'title' => 'Gateway Updated',
+            'body' => 'Gateway has been updated successfully',
+        ],
+        'currency_not_supported' => 'Currency not supported',
     ]
 ];

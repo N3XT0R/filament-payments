@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
+use TomatoPHP\FilamentPayments\Services\Drivers\Driver;
 
 class PaymentController extends Controller
 {
@@ -191,6 +192,9 @@ class PaymentController extends Controller
     {
 
         $drivers = config('filament-payments.drivers');
+        /**
+         * @var Driver $gatewayClass
+         */
         $gatewayClass = null;
         foreach ($drivers as $driver){
             if(str($driver)->contains($gateway)){
@@ -201,7 +205,6 @@ class PaymentController extends Controller
         if(!$gatewayClass){
             $gatewayClass = app(config('filament-payments.path') . "\\" . $gateway);
         }
-
 
         return $gatewayClass->verify($request);
     }
