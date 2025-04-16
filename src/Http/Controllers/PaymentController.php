@@ -187,22 +187,22 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function verify(Request $request, string $gatway)
+    public function verify(Request $request, string $gateway)
     {
 
         $drivers = config('filament-payments.drivers');
-        $gaywayClass = false;
+        $gatewayClass = null;
         foreach ($drivers as $driver){
-            if(str($driver)->contains($gatway)){
-                $gaywayClass = app($driver);
+            if(str($driver)->contains($gateway)){
+                $gatewayClass = app($driver);
                 break;
             }
         }
-        if(!$gaywayClass){
-            $gaywayClass = app(config('filament-payments.path') . "\\" . $gatway);
+        if(!$gatewayClass){
+            $gatewayClass = app(config('filament-payments.path') . "\\" . $gateway);
         }
 
 
-        return $gaywayClass->verify($request);
+        return $gatewayClass->verify($request);
     }
 }

@@ -19,7 +19,7 @@ class Paypal extends Driver
     {
         $gatewayParameters = $payment->gateway->gateway_parameters;
 
-        if ($gatewayParameters['mode'] == "live")
+        if ($gatewayParameters['mode'] === "live")
             $environment = new ProductionEnvironment($gatewayParameters['client_id'], $gatewayParameters['secret']);
         else
             $environment = new SandboxEnvironment($gatewayParameters['client_id'], $gatewayParameters['secret']);
@@ -33,7 +33,7 @@ class Paypal extends Driver
             "purchase_units" => [[
                 "reference_id" => uniqid(),
                 "amount" => [
-                    "value" => $payment->amount + $payment->charge,
+                    "value" => round($payment->amount + $payment->charge, 2),
                     "currency_code" => $payment->method_currency
                 ]
             ]],
@@ -43,6 +43,7 @@ class Paypal extends Driver
             ]
         ];
 
+
         try {
             $response = json_decode(json_encode($client->execute($request)), true);
 
@@ -51,7 +52,7 @@ class Paypal extends Driver
             return json_encode($send);
         } catch (Exception $e) {
             $send['error'] = true;
-            $send['message'] = $e;
+            $send['message'] = $e->getMessage();
             return json_encode($send);
         }
     }
@@ -65,7 +66,7 @@ class Paypal extends Driver
 
         $payment = Payment::where('trx',  $sessionId)->where('status', 0)->firstOrFail();
 
-        if ($gatewayParameter['mode'] == "live")
+        if ($gatewayParameter['mode'] === "live")
             $environment = new ProductionEnvironment($gatewayParameter['client_id'], $gatewayParameter['secret']);
         else
             $environment = new SandboxEnvironment($gatewayParameter['client_id'], $gatewayParameter['secret']);
