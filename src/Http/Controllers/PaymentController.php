@@ -207,6 +207,8 @@ class PaymentController extends Controller
             $gatewayClass = config('filament-payments.path')."\\".$gateway;
         }
 
-        return $gatewayClass::verify($request);
+        return class_exists($gatewayClass) ?
+            $gatewayClass::verify($request) :
+            throw new \RuntimeException(trans('filament-payments::messages.view.driver_not_exists'));
     }
 }
