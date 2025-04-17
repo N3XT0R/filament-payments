@@ -89,21 +89,23 @@ class Paypal extends Driver
 
         $client = new PayPalHttpClient($environment);
 
+        $redirectTo = $payment->failed_url;
+
         try {
             $response = $client->execute(new OrdersCaptureRequest($request['token']));
             $result = json_decode(json_encode($response, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
             if ($result['result']['status'] === "COMPLETED" && $result['statusCode'] == 201) {
                 self::paymentDataUpdate($payment);
-                return redirect($payment->success_url);
+                $redirectTo = $payment->success_url;
             } else {
                 self::paymentDataUpdate($payment, true);
-                return redirect($payment->failed_url);
             }
         } catch (Exception $e) {
             Log::error($e->getMessage(), ['exception' => $e]);
             self::paymentDataUpdate($payment, true);
-            return redirect($payment->failed_url);
         }
+
+        return redirect($redirectTo);
     }
 
     public function integration(): array
