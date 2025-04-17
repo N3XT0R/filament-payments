@@ -130,5 +130,11 @@ return [
             'body' => 'Gateway has been updated successfully',
         ],
         'currency_not_supported' => 'Currency not supported',
+        'website_does_not_match' => 'Website does not match the request origin',
+        'invalid_public_key' => 'Invalid public key',
+        'website_is_inactive' => 'Website is inactive',
+        'payment_created_successfully' => 'Payment created successfully',
+        'team_not_found' => 'Team not found',
+        'payment_not_found' => 'Payment not found',
     ]
 ];

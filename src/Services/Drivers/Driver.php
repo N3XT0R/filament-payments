@@ -4,7 +4,10 @@ namespace TomatoPHP\FilamentPayments\Services\Drivers;
 
 use App\Models\Account;
 use App\Models\Team;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
@@ -14,8 +17,7 @@ abstract class Driver
 {
     public static abstract function process(Payment $payment): false|string;
 
-    public static abstract function verify(Request $request
-    ): \Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector;
+    public static abstract function verify(Request $request): Application|RedirectResponse|Redirector;
 
     public abstract function integration(): array;
 
@@ -80,13 +82,11 @@ abstract class Driver
 
         $validated = $validator->validated();
 
-        $team = Team::where('public_key', $validated['public_key'])->where('status', 1)->first();
-
         $team = Team::where('public_key', $validated['public_key'])->first();
 
         if (!$team) {
             return response()->json([
-                'error' => 'Invalid public key'
+                'error' => trans('filament-payments::messages.view.invalid_public_key'),
             ], 400);
         }
 
@@ -94,13 +94,13 @@ abstract class Driver
 
         if ($team->website !== $requestHost) {
             return response()->json([
-                'error' => 'Website does not match the request origin',
+                'error' => trans('filament-payments::messages.view.website_does_not_match'),
             ], 400);
         }
 
         if ($team->status === 1) {
             return response()->json([
-                'error' => 'Website is inactive'
+                'error' => trans('filament-payments::messages.view.website_is_inactive'),
             ], 400);
         }
 
@@ -123,7 +123,7 @@ abstract class Driver
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Payment created successfully',
+            'message' => trans('filament-payments::messages.view.payment_created_successfully'),
             'data' => [
                 'id' => $payment->trx,
                 'url' => route('payment.index', $payment->trx),
@@ -154,7 +154,7 @@ abstract class Driver
         if (!$team) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Team not found'
+                'message' => trans('filament-payments::messages.view.team_not_found'),
             ], 404);
         }
 
@@ -163,12 +163,10 @@ abstract class Driver
         if (!$payment) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Payment not found'
+                'message' => trans('filament-payments::messages.view.payment_not_found'),
             ], 404);
         }
-
-        $status = 'unknown';
-
+        
         switch ($payment->status) {
             case 0:
                 $status = 'processing';
@@ -178,6 +176,10 @@ abstract class Driver
                 break;
             case 2:
                 $status = 'cancelled';
+                break;
+
+            default:
+                $status = 'unknown';
                 break;
         }
 
