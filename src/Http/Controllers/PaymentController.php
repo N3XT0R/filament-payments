@@ -90,13 +90,13 @@ class PaymentController extends Controller
 
         if ($team->website !== $requestHost) {
             return response()->json([
-                'error' => 'Website does not match the request origin',
+                'error' => trans('filament-payments::messages.view.website_does_not_match'),
             ], 400);
         }
 
         if ($team->status === 1) {
             return response()->json([
-                'error' => 'Website is inactive'
+                'error' => trans('filament-payments::messages.view.website_is_inactive')
             ], 400);
         }
 
@@ -118,7 +118,9 @@ class PaymentController extends Controller
         ]);
 
         return response()->json([
-            'status' => 'success', 'message' => trans('payment_created_successfully'), 'data' => [
+            'status' => 'success',
+            'message' => trans('filament-payments::messages.view.payment_created_successfully'),
+            'data' => [
                 'id' => $payment->trx,
                 'url' => route('payment.index', $payment->trx),
             ]
