@@ -118,7 +118,7 @@ class PaymentController extends Controller
         ]);
 
         return response()->json([
-            'status' => 'success', 'message' => 'Payment created successfully', 'data' => [
+            'status' => 'success', 'message' => trans('payment_created_successfully'), 'data' => [
                 'id' => $payment->trx,
                 'url' => route('payment.index', $payment->trx),
             ]
