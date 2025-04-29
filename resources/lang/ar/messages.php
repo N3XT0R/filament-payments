@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'datetime_format' => 'd/m/Y h:iA',
     "title" => "المدفوعات",
     "payments" => [
         "title" => "المدفوعات",
@@ -19,7 +20,6 @@ return [
             "username" => "اسم المستخدم",
             "date" => "التاريخ",
             "transaction_number" => "رقم المعاملة",
-            "method_name" => "الطريقة",
             "method_code" => "رمز الطريقة",
             "charge" => "الرسوم",
             "rate" => "السعر",

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'datetime_format' => 'd/m/Y h:iA',
     "title" => "Payments",
     "payments" => [
         "title" => "Payments",
