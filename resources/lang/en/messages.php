@@ -19,7 +19,6 @@ return [
             "username" => "Username",
             "date" => "Date",
             "transaction_number" => "Transaction Number",
-            "method_name" => "Method",
             "method_code" => "Method Code",
             "charge" => "Charge",
             "rate" => "Rate",
